@@ -46,4 +46,4 @@ jobs:
             mkdir -p /opt/travelteller
             pkill -f 'java -jar app.jar' || true
             nohup java -Dspring.profiles.active=oci -jar /opt/travelteller/app.jar > /opt/travelteller/app.log 2>&1 &
-            echo "✅ Deploy completedQ!"
+            echo "✅ Deploy completedQ!!"
