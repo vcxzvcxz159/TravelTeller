@@ -38,7 +38,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: build/libs/travelteller-*.jar
+          source: build/libs/TravleTeller-0.0.1-SNAPSHOT.jar
           target: /opt/travelteller/app.jar
       
       # 5. 서버에서 실행
