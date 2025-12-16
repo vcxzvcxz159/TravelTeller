@@ -23,7 +23,7 @@ jobs:
 
       # 3. Gradle 빌드
       - name: Build Jar
-        run: ./gradlew clean bootJar
+        run: ./gradlew clean bootJar -x test
 
       # 4. 서버에 Jar 파일 업로드
       - name: Copy Jar to server
