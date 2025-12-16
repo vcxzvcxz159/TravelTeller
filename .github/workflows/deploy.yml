@@ -14,18 +14,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Gradle 캐시 & 빌드
+      # 2. JDK 설정
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: '21'
 
+      # 3. Gradle 빌드
       - name: Build Jar
         run: ./gradlew clean bootJar
 
-      # 3. 서버 배포
-      - name: Deploy to server
+      # 4. 서버에 Jar 파일 업로드
+      - name: Copy Jar to server
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: build/libs/travelteller-0.0.1-SNAPSHOT.jar
+          target: /opt/travelteller/app.jar
+
+      # 5. 서버에서 실행
+      - name: Run application on server
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -33,10 +44,11 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             mkdir -p /opt/travelteller
+            # 기존 프로세스 종료
             pkill -f 'java -jar app.jar' || true
-            nohup java -jar /opt/travelteller/app.jar > /opt/travelteller/app.log 2>&1 &
-        source: build/libs/travelteller-0.0.1-SNAPSHOT.jar
-        target: /opt/travelteller/app.jar
-            # 서버에서 실행
-            nohup java -jar /opt/travelteller/app.jar > /opt/travelteller/app.log 2>&1 &
+            # 애플리케이션 실행
+            nohup java -Dspring.profiles.active=oci \
+                     -Doracle.net.tns_admin=/opt/travelteller/wallet \
+                     -jar /opt/travelteller/app.jar \
+                     > /opt/travelteller/app.log 2>&1 &
             echo "✅ Deploy completed!"
