@@ -1,0 +1,6 @@
+# application-oci.yml
+
+oci:
+  vault:
+    # OCI 인스턴스에서는 Resource Principal 인증을 사용하도록 설정
+    auth-type: resource-principal

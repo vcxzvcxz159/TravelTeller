@@ -1,0 +1,25 @@
+spring:
+
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@travelteller_medium
+    username: ADMIN
+    password: ${db.password}
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+    database-platform: org.hibernate.dialect.OracleDialect
+
+  ai:
+    openai:
+      api-key: ${openai.apikey}
+
+jwt:
+  secret-key: ${jwt.secretekey}
+  token-validity-in-seconds: 3600000 # 1시간
+
+oci:
+  vault:
+    secret-ocid: ocid1.vaultsecret.oc1.ap-chuncheon-1.amaaaaaah6iz7wya4qopnmu7f6bqyyismiqdx3jmjo42lqlexsbfypbtpcga

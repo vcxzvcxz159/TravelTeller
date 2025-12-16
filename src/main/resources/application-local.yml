@@ -1,0 +1,6 @@
+# application-local.yml
+
+oci:
+  vault:
+    # 로컬 환경에서는 파일 기반 인증을 사용하도록 설정
+    auth-type: file
