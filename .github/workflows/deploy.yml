@@ -28,6 +28,9 @@ jobs:
       - name: Build Jar
         run: ./gradlew clean bootJar -x test
 
+      - name: List build/libs
+        run: ls -l build/lib
+
       # 4. 서버에 Jar 파일 업로드
       - name: Copy Jar to server
         uses: appleboy/scp-action@v0.1.4
@@ -35,7 +38,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: build/libs/travelteller-0.0.1-SNAPSHOT.jar
+          source: build/libs/travelteller-*.jar
           target: /opt/travelteller/app.jar
       
       # 5. 서버에서 실행
