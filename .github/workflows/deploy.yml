@@ -3,7 +3,7 @@ name: Deploy TravleTeller
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
