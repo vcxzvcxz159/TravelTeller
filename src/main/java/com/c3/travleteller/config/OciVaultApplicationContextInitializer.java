@@ -49,7 +49,7 @@ public class OciVaultApplicationContextInitializer implements ApplicationContext
             System.out.println(">>> Vault Secret 환경에 등록 완료 <<<");
 
         } catch (Exception e) {
-            throw new IllegalStateException("OCI Vault Secret 로딩 실패", e);
+            throw new IllegalStateException("OCI Vault Secret 로딩 실패", e); 
         }
     }
 
