@@ -47,7 +47,5 @@ jobs:
             # 기존 프로세스 종료
             pkill -f 'java -jar app.jar' || true
             # 애플리케이션 실행
-            nohup java -Dspring.profiles.active=oci \
-                     -jar /opt/travelteller/app.jar \
-                     > /opt/travelteller/app.log 2>&1 &
+            nohup java -Dspring.profiles.active=oci -jar /opt/travelteller/app.jar > /opt/travelteller/app.log 2>&1 &
             echo "✅ Deploy completed!"
