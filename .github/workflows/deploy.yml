@@ -33,10 +33,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             mkdir -p /opt/travelteller
-            # 기존 프로세스 종료
             pkill -f 'java -jar app.jar' || true
-            # 빌드한 Jar 업로드
-            scp -i ~/.ssh/id_rsa build/libs/travelteller-0.0.1-SNAPSHOT.jar ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/travelteller/app.jar
+            nohup java -jar /opt/travelteller/app.jar > /opt/travelteller/app.log 2>&1 &
+        source: build/libs/travelteller-0.0.1-SNAPSHOT.jar
+        target: /opt/travelteller/app.jar
             # 서버에서 실행
             nohup java -jar /opt/travelteller/app.jar > /opt/travelteller/app.log 2>&1 &
             echo "✅ Deploy completed!"
