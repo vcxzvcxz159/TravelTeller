@@ -48,7 +48,6 @@ jobs:
             pkill -f 'java -jar app.jar' || true
             # 애플리케이션 실행
             nohup java -Dspring.profiles.active=oci \
-                     -Doracle.net.tns_admin=/opt/travelteller/wallet \
                      -jar /opt/travelteller/app.jar \
                      > /opt/travelteller/app.log 2>&1 &
             echo "✅ Deploy completed!"
