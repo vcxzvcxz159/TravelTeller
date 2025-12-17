@@ -49,19 +49,18 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # 1. 디렉토리 이동 및 권한 정리
             cd /opt/travelteller
             
-            # 2. 기존 앱 종료
-            sudo pkill -f 'app.jar' || true
-            
-            # 3. 파일명 변경
+            # 1. 새로 전송된 파일이 있다면 app.jar로 교체
             if [ -f TravleTeller*.jar ]; then
                 mv TravleTeller*.jar app.jar
+                echo "📦 New jar file applied."
             fi
             
-            # 4. 실행 (핵심: 괄호와 출력을 완전히 차단하여 SSH 세션을 즉시 해제)
-            (nohup /usr/lib/jvm/java-21-openjdk-amd64/bin/java -Dspring.profiles.active=oci -Xmx512m -jar app.jar > app.log 2>&1 &)
+            # 2. 서비스 재시작 (OS가 프로세스를 관리하므로 143 에러 방지)
+            sudo systemctl restart travelteller
             
-            # 5. SSH가 즉시 성공으로 판단하게 함
-            echo "🚀 Deployment command sent."
+            # 3. 상태 확인 (성공적으로 떴는지 체크)
+            sleep 2
+            sudo systemctl is-active travelteller
+            echo "✅ Service restarted successfully!"
