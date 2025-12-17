@@ -65,7 +65,7 @@ jobs:
             sleep 3
             if sudo systemctl is-active travelteller > /dev/null
             then
-                echo "✅ Service is running perfectly!"
+                echo "✅ Service is running perfectly!!"
             else
                 echo "❌ Service failed to start. Last logs:"
                 tail -n 20 /opt/travelteller/app.log
