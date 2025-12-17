@@ -51,23 +51,16 @@ jobs:
           script: |
             cd /opt/travelteller
             
-            # 1. 기존 앱 종료
-            sudo pkill -f 'app.jar' || true
-            
-            # 2. 파일명 변경 (Wildcard 사용으로 오타 방지)
+            # 1. 새로 전송된 파일이 있다면 app.jar로 교체
             if [ -f TravleTeller*.jar ]; then
                 mv TravleTeller*.jar app.jar
+                echo "📦 New jar file applied."
             fi
             
-            # 3. 실행 (환경 변수 주입 + 로그 덮어쓰기)
-            (
-              export OCI_RESOURCE_PRINCIPAL_VERSION=2.2
-              export OCI_RESOURCE_PRINCIPAL_REGION=$(curl -s -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance/region)
-              
-              nohup /usr/lib/jvm/java-21-openjdk-amd64/bin/java \
-                -Dspring.profiles.active=oci \
-                -Xmx512m \
-                -jar app.jar > app.log 2>&1 &
-            )
+            # 2. 서비스 재시작 (OS가 프로세스를 관리하므로 143 에러 방지)
+            sudo systemctl restart travelteller
             
-            echo "🚀 Deployment completed. Logs: /opt/travelteller/app.log"
+            # 3. 상태 확인 (성공적으로 떴는지 체크)
+            sleep 2
+            sudo systemctl is-active travelteller
+            echo "✅ Service restarted successfully!"
