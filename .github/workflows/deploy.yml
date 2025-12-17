@@ -55,15 +55,14 @@ jobs:
             # 1. 기존 앱 종료
             pkill -f 'java -jar app.jar' || true
             
-            # 2. 파일명 변경 (scp로 전송된 파일이 있는지 확인 후 변경)
+            # 2. 파일명 변경
             if [ -f "TravleTeller-0.0.1-SNAPSHOT.jar" ]; then
                 mv TravleTeller-0.0.1-SNAPSHOT.jar app.jar
             fi
             
-            # 3. 실행 (자바 프로세스가 안정화될 시간을 주고 세션 분리)
-            # 'disown' 명령어를 추가하여 쉘 세션과 완전히 독립시킵니다.
-            nohup java -Dspring.profiles.active=oci -Xmx512m -jar app.jar > app.log 2>&1 &
-            sleep 3
-            disown
+            # 3. 실행 (괄호를 사용한 이중 분리 및 모든 입출력 차단)
+            (nohup java -Dspring.profiles.active=oci -Xmx512m -jar app.jar > app.log 2>&1 &)
             
-            echo "✅ Deploy completed!!"
+            # 4. SSH 액션이 성공으로 인지하도록 즉시 종료
+            echo "✅ Deployment signal sent successfully!"
+            exit 0
