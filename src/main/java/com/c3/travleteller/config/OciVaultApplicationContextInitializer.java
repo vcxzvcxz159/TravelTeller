@@ -61,7 +61,8 @@ public class OciVaultApplicationContextInitializer implements ApplicationContext
 
         if ("resource-principal".equalsIgnoreCase(authType)) {
             log.info("⚙️ Resource Principal 인증 Provider를 사용합니다.");
-            return (AuthenticationDetailsProvider) ResourcePrincipalAuthenticationDetailsProvider.builder().build();
+            return (AuthenticationDetailsProvider) ResourcePrincipalAuthenticationDetailsProvider.builder()
+                    .build();
         }
 
         if ("file".equalsIgnoreCase(authType)) {

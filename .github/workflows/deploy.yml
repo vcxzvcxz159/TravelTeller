@@ -58,9 +58,16 @@ jobs:
             fi
             
             # 2. 서비스 재시작 (OS가 프로세스를 관리하므로 143 에러 방지)
+            # 실행 시마다 서비스 파일 설정에 의해 app.log는 초기화됩니다.
             sudo systemctl restart travelteller
             
-            # 3. 상태 확인 (성공적으로 떴는지 체크)
-            sleep 2
-            sudo systemctl is-active travelteller
-            echo "✅ Service restarted successfully!"
+            # 3. 상태 확인
+            sleep 3
+            if sudo systemctl is-active travelteller > /dev/null
+            then
+                echo "✅ Service is running perfectly!"
+            else
+                echo "❌ Service failed to start. Last logs:"
+                tail -n 20 /opt/travelteller/app.log
+                exit 1
+            fi
