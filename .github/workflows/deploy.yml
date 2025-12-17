@@ -7,38 +7,41 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    # 1. 빌드는 성능 좋은 GitHub 서버(7GB RAM)에서 수행
+    runs-on: ubuntu-latest
 
     steps:
-      # 1. 레포 클론
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. JDK 설정
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
-          distribution: temurin
+          distribution: 'temurin'
           java-version: '21'
+          # 캐싱을 추가하면 다음 빌드부터 훨씬 빨라집니다
+          cache: 'gradle'
 
-      # 3. Gradle 빌드
       - name: Make Gradle Wrapper executable
         run: chmod +x ./gradlew
         
+      # 2. 여기서 빌드합니다. (내 서버 리소스를 쓰지 않음)
       - name: Build Jar
         run: ./gradlew clean bootJar -x test
 
-      # 4. 서버에 Jar 파일 업로드
+      # 3. 빌드된 파일만 내 서버(158.179.173.122)로 전송
       - name: Copy Jar to server
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: build/libs/TravleTeller-0.0.1-SNAPSHOT.jar
-          target: /opt/travelteller/app.jar
-      
-      # 5. 서버에서 실행
+          source: "build/libs/TravleTeller-0.0.1-SNAPSHOT.jar"
+          target: "/opt/travelteller/"
+          # 폴더 구조 유지를 위해 strip_components 사용 권장
+          strip_components: 2 
+
+      # 4. 내 서버에 접속해서 실행만 시킴
       - name: Run application on server
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -47,6 +50,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             mkdir -p /opt/travelteller
+            # 기존 앱 종료
             pkill -f 'java -jar app.jar' || true
-            nohup java -Dspring.profiles.active=oci -jar /opt/travelteller/app.jar > /opt/travelteller/app.log 2>&1 &
+            # 파일명 변경 (버전 관리 편의성)
+            mv /opt/travelteller/TravleTeller-0.0.1-SNAPSHOT.jar /opt/travelteller/app.jar
+            # 실행
+            nohup java -Dspring.profiles.active=oci -Xmx512m -jar /opt/travelteller/app.jar > /opt/travelteller/app.log 2>&1 &
             echo "✅ Deploy completed!!"
