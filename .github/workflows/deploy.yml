@@ -63,4 +63,4 @@ jobs:
             # 3. 상태 확인 (성공적으로 떴는지 체크)
             sleep 2
             sudo systemctl is-active travelteller
-            echo "✅ Service restarted successfully!!"
+            echo "✅ Service restarted successfully!"
