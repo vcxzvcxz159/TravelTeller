@@ -56,4 +56,4 @@ jobs:
             mv /opt/travelteller/TravleTeller-0.0.1-SNAPSHOT.jar /opt/travelteller/app.jar
             # 실행
             nohup java -Dspring.profiles.active=oci -Xmx512m -jar /opt/travelteller/app.jar > /opt/travelteller/app.log 2>&1 &
-            echo "✅ Deploy completed!!"
+            echo "✅ Deploy completed!"
