@@ -2,5 +2,6 @@
 
 oci:
   vault:
-    # OCI 인스턴스에서는 Resource Principal 인증을 사용하도록 설정
-    auth-type: resource-principal
+    auth-type: file
+    config-file: "/opt/travelteller/config"
+    config-profile: "DEFAULT"

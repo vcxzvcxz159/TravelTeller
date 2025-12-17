@@ -6,7 +6,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oracle.bmc.auth.AuthenticationDetailsProvider;
 import com.oracle.bmc.auth.ConfigFileAuthenticationDetailsProvider;
-import com.oracle.bmc.auth.ResourcePrincipalAuthenticationDetailsProvider;
 import com.oracle.bmc.secrets.SecretsClient;
 import com.oracle.bmc.secrets.model.Base64SecretBundleContentDetails;
 import com.oracle.bmc.secrets.requests.GetSecretBundleRequest;
@@ -38,7 +37,10 @@ public class OciVaultApplicationContextInitializer implements ApplicationContext
         OciVaultProperties ociVaultProperties = OciVaultPropertiesBinder.bind(environment);
 
         try {
-            AuthenticationDetailsProvider provider = createAuthProvider(ociVaultProperties);
+            AuthenticationDetailsProvider provider =  new ConfigFileAuthenticationDetailsProvider(
+                    ociVaultProperties.getConfigFile(),
+                    ociVaultProperties.getConfigProfile());
+
             String jsonSecret = fetchSecretFromVault(provider, ociVaultProperties);
 
             Map<String, Object> vaultSecrets = objectMapper.readValue(
@@ -51,29 +53,6 @@ public class OciVaultApplicationContextInitializer implements ApplicationContext
         } catch (Exception e) {
             throw new IllegalStateException("OCI Vault Secret 로딩 실패", e); 
         }
-    }
-
-    /**
-     * 실행 환경에 따라 적절한 OCI 인증 Provider를 생성합니다.
-     */
-    private AuthenticationDetailsProvider createAuthProvider(OciVaultProperties ociVaultProperties) throws IOException {
-        String authType = ociVaultProperties.getAuthType();
-
-        if ("resource-principal".equalsIgnoreCase(authType)) {
-            log.info("⚙️ Resource Principal 인증 Provider를 사용합니다.");
-            return (AuthenticationDetailsProvider) ResourcePrincipalAuthenticationDetailsProvider.builder()
-                    .build();
-        }
-
-        if ("file".equalsIgnoreCase(authType)) {
-            log.info("⚙️ 로컬 OCI 설정 파일 인증 Provider를 사용합니다. Profile: {}", ociVaultProperties.getConfigProfile());
-            return new ConfigFileAuthenticationDetailsProvider(
-                    ociVaultProperties.getConfigFile(),
-                    ociVaultProperties.getConfigProfile()
-            );
-        }
-
-        return null;
     }
 
     /**

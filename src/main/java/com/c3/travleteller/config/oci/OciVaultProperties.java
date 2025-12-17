@@ -11,6 +11,6 @@ public class OciVaultProperties {
 
     private String secretOcid;
     private String authType;
-    private String configFile = "~/.oci/config";;
-    private String configProfile = "DEFAULT";
+    private String configFile;
+    private String configProfile;
 }

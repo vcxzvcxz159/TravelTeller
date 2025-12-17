@@ -4,3 +4,5 @@ oci:
   vault:
     # 로컬 환경에서는 파일 기반 인증을 사용하도록 설정
     auth-type: file
+    config-file: "~/.oci/config" # 위에서 만든 config 파일 경로
+    config-profile: "DEFAULT"
